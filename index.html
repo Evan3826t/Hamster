@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>打地鼠</title>
+    <style>
+    .main{
+        margin: auto;
+        width: 500px;
+        height: 500px;
+        background-color: blanchedalmond;
+        text-align: center;
+        padding-left: 90px;
+        padding-top: 50px;
+        box-sizing: border-box;
+    }
+    td{
+        border: 1px solid black;
+        width: 100px;
+        height: 100px;
+    }
+    .red{
+        background-color: red;
+    }
+    .blue{
+        background-color: blue;
+    }
+    .scoreboard{
+        background-color: blue;
+        width: 200px;
+        height: 100px;
+        margin: auto;
+    }
+    </style>
+</head>
+<body>
+    <div class="main">
+        <table>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+        </table>
+    </div>
+    <div class="scoreboard">
+        <input type="button" value="開始遊戲" id="startBtn" onclick="">
+        <div>目前分數：<span id="scoreText">0</span></div>
+        <div>最高分數：<span id="highName">無</span>　分數為：<span id="highScore">0</span></div>
+    </div>
+    
+    <script>
+        let score = 0;
+        let scoreText = document.getElementById("scoreText");
+        let startBtn = document.getElementById("startBtn");
+        let tds = document.getElementsByTagName("td");
+
+        // 設定計時器的變數為 0 ，避免被 clearInterval 清掉，才可以重複利用
+        let gameTimer = 0;
+
+
+        let high = { name: "", score: 0};
+        let highName = document.getElementById("highName");
+        let highScore = document.getElementById("highScore");
+
+        let highStorage = window.localStorage.getItem("highscore");
+        console.log(highStorage);
+        if(highStorage != null){
+            high = JSON.parse(highStorage);
+            highName.innerText = high.name;
+            highScore.innerText = high.score;
+        }
+
+
+        startBtn.onclick = () =>{
+            // 將開始按鈕停用
+            startBtn.setAttribute("disabled", true);
+            
+            // 分數歸零
+            score = 0;
+            scoreText.innerText = score;
+            gameTimer = setInterval(game, 1000);
+            game();
+            setTimeout(()=>{
+            clearInterval(gameTimer);
+            startBtn.removeAttribute("disabled");
+            for(let td of tds){
+                td.classList.remove("red");
+                td.classList.remove("blue");
+            }
+            alert(`遊戲結束，得到${score}分`);
+            if( score > high.score){
+                let playerName = prompt("恭喜你得到最高分，請輸入名字");
+                high.name = playerName;
+                highName.innerText = playerName;
+                high.score = score;
+                highScore.innerText = score;
+
+                // window.localStorage.setItem  只能存文字
+                // JSON.stringify 可以將 JSON 陣列轉成文字
+                window.localStorage.setItem("highscore", JSON.stringify(high));
+            }
+            },2000)
+            
+        }
+
+        let game = () => {
+            for(let td of tds){
+                td.classList.remove("red");
+                td.classList.remove("blue");
+            }
+            for(let i= 0; i< 3; i++){
+                let rand = Math.floor(Math.random()*9);
+                // 確認 tds 中有沒有重複選取 (classList 要用 contains 不能使用 include)
+                if( tds[rand].classList.contains("red")){
+                    i--;
+                }
+                tds[rand].classList.add("red");
+            }
+        }
+
+        for(let td of tds){
+            td.onclick = () => {
+                if(td.classList.contains("red")){
+                    td.classList.remove("red");
+                    td.classList.add("blue");
+                    score++;
+                    scoreText.innerText = score;
+                }
+            }
+        }
+        
+    </script>
+</body>
+</html>
