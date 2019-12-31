@@ -106,6 +106,7 @@
         let highScore = document.getElementById("highScore");
 
         let highStorage = window.localStorage.getItem("highscore");
+
         console.log(highStorage);
         if(highStorage != null){
             high = JSON.parse(highStorage);
@@ -124,41 +125,48 @@
             gameTimer = setInterval(game, 2000);
             game();
             setTimeout(()=>{
-            clearInterval(gameTimer);
-            startBtn.removeAttribute("disabled");
-            for(let div of divs){
-                div.classList.remove("red");
-                div.classList.remove("blue");
-            }
-            alert(`遊戲結束，得到${score}分`);
-            if( score > high.score){
-                let playerName = prompt("恭喜你得到最高分，請輸入名字");
-                high.name = playerName;
-                highName.innerText = playerName;
-                high.score = score;
-                highScore.innerText = score;
+                clearInterval(gameTimer);
+                startBtn.removeAttribute("disabled");
+                for(let div of divs){
+                    div.classList.remove("red");
+                    div.classList.remove("blue");
+                }
+                alert(`遊戲結束，得到${score}分`);
+                if( score > high.score){
+                    let playerName = prompt("恭喜你得到最高分，請輸入名字");
+                    high.name = playerName;
+                    highName.innerText = playerName;
+                    high.score = score;
+                    highScore.innerText = score;
 
-                // window.localStorage.setItem  只能存文字
-                // JSON.stringify 可以將 JSON 陣列轉成文字
-                window.localStorage.setItem("highscore", JSON.stringify(high));
-            }
+                    // window.localStorage.setItem  只能存文字
+                    // JSON.stringify 可以將 JSON 陣列轉成文字
+                    window.localStorage.setItem("highscore", JSON.stringify(high));
+                }
             },10000)
             
         }
 
         let game = () => {
+            console.log(gameTimer)
             for(let div of divs){
                 div.classList.remove("red");
                 div.classList.remove("blue");
             }
-            for(let i= 0; i< 3; i++){
-                let rand = Math.floor(Math.random()*9);
-                // 確認 divs 中有沒有重複選取 (classList 要用 contains 不能使用 include)
-                if( divs[rand].classList.contains("red")){
-                    i--;
+
+            setTimeout(()=>{
+                if(startBtn.hasAttribute("disabled")) {
+                    for(let i= 0; i< 3; i++){
+                        let rand = Math.floor(Math.random()*9);
+                        // 確認 divs 中有沒有重複選取 (classList 要用 contains 不能使用 include)
+                        if( divs[rand].classList.contains("red")){
+                            i--;
+                        }
+                        divs[rand].classList.add("red");
+                    }
                 }
-                divs[rand].classList.add("red");
-            }
+            }, 10)
+            
         }
 
         for(let div of divs){
